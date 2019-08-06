@@ -39,5 +39,5 @@ Linux otuslinux 5.2.5 #1 SMP Thu Aug 1 10:37:02 UTC 2019 x86_64 x86_64 x86_64 GN
 Linux version 5.2.5 (root@otuslinux) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-36) (GCC)) #1 SMP Thu Aug 1 10:37:02 UTC 2019
 
 ---
-yum история [здесь](yum_history.log) 
+yum история [здесь](yum.log) 
 config файл [здесь](.config)

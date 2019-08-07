@@ -1,0 +1,1 @@
+mdadm --create /dev/md0 --level 5 -n 6 /dev/sd{b,c,d,e,f,g}

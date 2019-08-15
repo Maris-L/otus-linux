@@ -1,0 +1,440 @@
+Script started on Thu 15 Aug 2019 07:57:09 AM UTC
+]0;root@lvm:~[?1034h[root@lvm ~]# lsblk
+NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda                       8:0    0   40G  0 disk 
+├─sda1                    8:1    0    1M  0 part 
+├─sda2                    8:2    0    1G  0 part /boot
+└─sda3                    8:3    0   39G  0 part 
+  ├─VolGroup00-LogVol00 253:0    0 37.5G  0 lvm  /
+  └─VolGroup00-LogVol01 253:1    0  1.5G  0 lvm  [SWAP]
+sdb                       8:16   0   10G  0 disk 
+sdc                       8:32   0    2G  0 disk 
+sdd                       8:48   0    1G  0 disk 
+sde                       8:64   0    1G  0 disk 
+]0;root@lvm:~[root@lvm ~]# lvs
+  LV       VG         Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  LogVol00 VolGroup00 -wi-ao---- <37.47g                                                    
+  LogVol01 VolGroup00 -wi-ao----   1.50g                                                    
+]0;root@lvm:~[root@lvm ~]# pvs
+  PV         VG         Fmt  Attr PSize   PFree
+  /dev/sda3  VolGroup00 lvm2 a--  <38.97g    0 
+]0;root@lvm:~[root@lvm ~]# pvcreate /dev/sdb
+  Physical volume "/dev/sdb" successfully created.
+]0;root@lvm:~[root@lvm ~]# vgcreate vg1 /dev/sdb
+  Volume group "vg1" successfully created
+]0;root@lvm:~[root@lvm ~]# lvcreate -n lv1 -l +1--00%FREE /dev/vg1[1P[1P
+  Logical volume "lv1" created.
+]0;root@lvm:~[root@lvm ~]# lsblk
+NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda                       8:0    0   40G  0 disk 
+├─sda1                    8:1    0    1M  0 part 
+├─sda2                    8:2    0    1G  0 part /boot
+└─sda3                    8:3    0   39G  0 part 
+  ├─VolGroup00-LogVol00 253:0    0 37.5G  0 lvm  /
+  └─VolGroup00-LogVol01 253:1    0  1.5G  0 lvm  [SWAP]
+sdb                       8:16   0   10G  0 disk 
+└─vg1-lv1               253:2    0   10G  0 lvm  
+sdc                       8:32   0    2G  0 disk 
+sdd                       8:48   0    1G  0 disk 
+sde                       8:64   0    1G  0 disk 
+]0;root@lvm:~[root@lvm ~]# lsblk -fi
+NAME                    FSTYPE      LABEL UUID                                   MOUNTPOINT
+sda                                                                              
+|-sda1                                                                           
+|-sda2                  xfs               570897ca-e759-4c81-90cf-389da6eee4cc   /boot
+`-sda3                  LVM2_member       vrrtbx-g480-HcJI-5wLn-4aOf-Olld-rC03AY 
+  |-VolGroup00-LogVol00 xfs               b60e9498-0baa-4d9f-90aa-069048217fee   /
+  `-VolGroup00-LogVol01 swap              c39c5bed-f37c-4263-bee8-aeb6a6659d7b   [SWAP]
+sdb                     LVM2_member       cVWNJr-wmiD-LQU6-7NzR-jwka-VAR3-fWxpuT 
+`-vg1-lv1                                                                        
+sdc                                                                              
+sdd                                                                              
+sde                                                                              
+]0;root@lvm:~[root@lvm ~]# mkfs.xfs /dev/vg1/lv1
+meta-data=/dev/vg1/lv1           isize=512    agcount=4, agsize=655104 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0, sparse=0
+data     =                       bsize=4096   blocks=2620416, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+]0;root@lvm:~[root@lvm ~]# mount /dev/vg1/lv1 /mnt
+]0;root@lvm:~[root@lvm ~]# xfsdump -J - /dev/VolGroup00/LogVol00 | xfsrestore -J - /mnt
+bash: xfsrestore: command not found
+bash: xfsdump: command not found
+]0;root@lvm:~[root@lvm ~]# yum install xfsdump xfsrestore
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: centos.linux.edu.lv
+ * extras: centos.linux.edu.lv
+ * updates: centos.linux.edu.lv
+No package [1mxfsrestore(B[m available.
+Resolving Dependencies
+--> Running transaction check
+---> Package xfsdump.x86_64 0:3.1.7-1.el7 will be installed
+--> Processing Dependency: attr >= 2.0.0 for package: xfsdump-3.1.7-1.el7.x86_64
+--> Running transaction check
+---> Package attr.x86_64 0:2.4.46-13.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+================================================================================================================================================================
+ Package                              Arch                                Version                                       Repository                         Size
+================================================================================================================================================================
+Installing:
+ xfsdump                              x86_64                              3.1.7-1.el7                                   base                              308 k
+Installing for dependencies:
+ attr                                 x86_64                              2.4.46-13.el7                                 base                               66 k
+
+Transaction Summary
+================================================================================================================================================================
+Install  1 Package (+1 Dependent package)
+
+Total download size: 374 k
+Installed size: 1.1 M
+Is this ok [y/d/N]: n
+Exiting on user command
+Your transaction was saved, rerun it with:
+ yum load-transaction /tmp/yum_save_tx.2019-08-15.08-00.voDUpk.yumtx
+]0;root@lvm:~[root@lvm ~]# yum install xfsdump xfsprogs
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: centos.linux.edu.lv
+ * extras: centos.linux.edu.lv
+ * updates: centos.linux.edu.lv
+Resolving Dependencies
+--> Running transaction check
+---> Package xfsdump.x86_64 0:3.1.7-1.el7 will be installed
+--> Processing Dependency: attr >= 2.0.0 for package: xfsdump-3.1.7-1.el7.x86_64
+---> Package xfsprogs.x86_64 0:4.5.0-15.el7 will be updated
+---> Package xfsprogs.x86_64 0:4.5.0-19.el7_6 will be an update
+--> Running transaction check
+---> Package attr.x86_64 0:2.4.46-13.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+================================================================================================================================================================
+ Package                              Arch                               Version                                      Repository                           Size
+================================================================================================================================================================
+Installing:
+ xfsdump                              x86_64                             3.1.7-1.el7                                  base                                308 k
+Updating:
+ xfsprogs                             x86_64                             4.5.0-19.el7_6                               updates                             897 k
+Installing for dependencies:
+ attr                                 x86_64                             2.4.46-13.el7                                base                                 66 k
+
+Transaction Summary
+================================================================================================================================================================
+Install  1 Package (+1 Dependent package)
+Upgrade  1 Package
+
+Total download size: 1.2 M
+Is this ok [y/d/N]: y
+Downloading packages:
+Not downloading deltainfo for updates, MD is 945 k and rpms are 897 k
+(2/3): xfsdump-3.1.7-1.el7.x86_64.rpm                             0% [                                                        ]  0.0 B/s |    0 B  --:--:-- ETA (1/3): attr-2.4.46-13.el7.x86_64.rpm                                                                                                     |  66 kB  00:00:00     
+(2/3): xfsdump-3.1.7-1.el7.x86_64.rpm                                                                                                    | 308 kB  00:00:00     
+(3/3): xfsprogs-4.5.0-19.el7_6.x86_64.rpm                                                                                                | 897 kB  00:00:00     
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+Total                                                                                                                           1.4 MB/s | 1.2 MB  00:00:00     
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [                                                                                                           ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [##                                                                                                         ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [###                                                                                                        ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [#####                                                                                                      ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [######                                                                                                     ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [########                                                                                                   ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [#########                                                                                                  ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [###########                                                                                                ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [############                                                                                               ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [##############                                                                                             ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [################                                                                                           ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [##################                                                                                         ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [####################                                                                                       ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [######################                                                                                     ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [#######################                                                                                    ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [#########################                                                                                  ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [###########################                                                                                ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [############################                                                                               ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [###############################                                                                            ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [################################                                                                           ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [##################################                                                                         ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [###################################                                                                        ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [#####################################                                                                      ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [######################################                                                                     ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [########################################                                                                   ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [#########################################                                                                  ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [###########################################                                                                ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [##############################################                                                             ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [###############################################                                                            ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [#################################################                                                          ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [###################################################                                                        ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [####################################################                                                       ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [######################################################                                                     ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [#######################################################                                                    ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [########################################################                                                   ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [##########################################################                                                 ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [###########################################################                                                ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [##############################################################                                             ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [################################################################                                           ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [#################################################################                                          ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [###################################################################                                        ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [#####################################################################                                      ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [#######################################################################                                    ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [########################################################################                                   ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [##########################################################################                                 ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [###########################################################################                                ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [##############################################################################                             ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [################################################################################                           ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [#################################################################################                          ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [##################################################################################                         ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [###################################################################################                        ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [####################################################################################                       ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [#####################################################################################                      ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [######################################################################################                     ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [########################################################################################                   ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [##########################################################################################                 ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [############################################################################################               ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [##############################################################################################             ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [###############################################################################################            ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [#################################################################################################          ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [###################################################################################################        ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [####################################################################################################       ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [######################################################################################################     ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [########################################################################################################   ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64 [#########################################################################################################  ] 1/4  Updating   : xfsprogs-4.5.0-19.el7_6.x86_64                                                                                                               1/4 
+  Installing : attr-2.4.46-13.el7.x86_64 [                                                                                                                ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [######                                                                                                          ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [####################                                                                                            ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [##############################                                                                                  ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [#################################                                                                               ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [############################################                                                                    ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [###############################################                                                                 ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [################################################                                                                ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [########################################################                                                        ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [###########################################################                                                     ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [######################################################################                                          ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [#######################################################################                                         ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [########################################################################                                        ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [###########################################################################                                     ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [###############################################################################                                 ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [##################################################################################                              ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [######################################################################################                          ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [##########################################################################################                      ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [##############################################################################################                  ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [#################################################################################################               ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [#####################################################################################################           ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [#########################################################################################################       ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [###########################################################################################################     ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [############################################################################################################    ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [#############################################################################################################   ] 2/4  Installing : attr-2.4.46-13.el7.x86_64 [##############################################################################################################  ] 2/4  Installing : attr-2.4.46-13.el7.x86_64                                                                                                                    2/4 
+  Installing : xfsdump-3.1.7-1.el7.x86_64 [                                                                                                               ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [######                                                                                                         ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [##############                                                                                                 ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [######################                                                                                         ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [############################                                                                                   ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [#################################                                                                              ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [#########################################                                                                      ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [################################################                                                               ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [#######################################################                                                        ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [###############################################################                                                ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [#######################################################################                                        ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [#############################################################################                                  ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [##################################################################################                             ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [#####################################################################################                          ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [#######################################################################################                        ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [########################################################################################                       ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [###############################################################################################                ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [##################################################################################################             ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [#########################################################################################################      ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [###########################################################################################################    ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [############################################################################################################   ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64 [#############################################################################################################  ] 3/4  Installing : xfsdump-3.1.7-1.el7.x86_64                                                                                                                   3/4 
+  Cleanup    : xfsprogs-4.5.0-15.el7.x86_64                                                                                                                 4/4 
+  Verifying  : attr-2.4.46-13.el7.x86_64                                                                                                                    1/4 
+  Verifying  : xfsdump-3.1.7-1.el7.x86_64                                                                                                                   2/4 
+  Verifying  : xfsprogs-4.5.0-19.el7_6.x86_64                                                                                                               3/4 
+  Verifying  : xfsprogs-4.5.0-15.el7.x86_64                                                                                                                 4/4 
+
+Installed:
+  xfsdump.x86_64 0:3.1.7-1.el7                                                                                                                                  
+
+Dependency Installed:
+  attr.x86_64 0:2.4.46-13.el7                                                                                                                                   
+
+Updated:
+  xfsprogs.x86_64 0:4.5.0-19.el7_6                                                                                                                              
+
+Complete!
+]0;root@lvm:~[root@lvm ~]# xfsdump -J - /dev/VolGroup00/LogVol00 | xfsrestore -J - /mnt
+xfsrestore: using file dump (drive_simple) strategy
+xfsrestore: version 3.1.7 (dump format 3.0)
+xfsdump: using file dump (drive_simple) strategy
+xfsdump: version 3.1.7 (dump format 3.0)
+xfsdump: level 0 dump of lvm:/
+xfsdump: dump date: Thu Aug 15 08:01:43 2019
+xfsdump: session id: 90b9c443-93e1-452d-acff-492267782e9a
+xfsdump: session label: ""
+xfsrestore: searching media for dump
+xfsdump: ino map phase 1: constructing initial dump list
+xfsdump: ino map phase 2: skipping (no pruning necessary)
+xfsdump: ino map phase 3: skipping (only one dump stream)
+xfsdump: ino map construction complete
+xfsdump: estimated dump size: 765681792 bytes
+xfsdump: creating dump session media file 0 (media 0, file 0)
+xfsdump: dumping ino map
+xfsdump: dumping directories
+xfsrestore: examining media file 0
+xfsrestore: dump description: 
+xfsrestore: hostname: lvm
+xfsrestore: mount point: /
+xfsrestore: volume: /dev/mapper/VolGroup00-LogVol00
+xfsrestore: session time: Thu Aug 15 08:01:43 2019
+xfsrestore: level: 0
+xfsrestore: session label: ""
+xfsrestore: media label: ""
+xfsrestore: file system id: b60e9498-0baa-4d9f-90aa-069048217fee
+xfsrestore: session id: 90b9c443-93e1-452d-acff-492267782e9a
+xfsrestore: media id: cb3f1b25-01e9-471e-99d1-a98b8e095d7e
+xfsrestore: searching media for directory dump
+xfsrestore: reading directories
+xfsdump: dumping non-directory files
+xfsrestore: 2698 directories and 23649 entries processed
+xfsrestore: directory post-processing
+xfsrestore: restoring non-directory files
+xfsdump: ending media file
+xfsdump: media file size 742542656 bytes
+xfsdump: dump size (non-dir files) : 729358032 bytes
+xfsdump: dump complete: 33 seconds elapsed
+xfsdump: Dump Status: SUCCESS
+xfsrestore: restore complete: 33 seconds elapsed
+xfsrestore: Restore Status: SUCCESS
+]0;root@lvm:~[root@lvm ~]# ll /mnt
+total 16
+lrwxrwxrwx.  1 root    root       7 Aug 15 08:01 [0m[01;36mbin[0m -> [01;34musr/bin[0m
+drwxr-xr-x.  2 root    root       6 May 12  2018 [01;34mboot[0m
+drwxr-xr-x.  2 root    root       6 May 12  2018 [01;34mdev[0m
+drwxr-xr-x. 79 root    root    8192 Aug 15 08:01 [01;34metc[0m
+drwxr-xr-x.  3 root    root      21 May 12  2018 [01;34mhome[0m
+lrwxrwxrwx.  1 root    root       7 Aug 15 08:01 [01;36mlib[0m -> [01;34musr/lib[0m
+lrwxrwxrwx.  1 root    root       9 Aug 15 08:01 [01;36mlib64[0m -> [01;34musr/lib64[0m
+drwxr-xr-x.  2 root    root       6 Apr 11  2018 [01;34mmedia[0m
+drwxr-xr-x.  2 root    root       6 Apr 11  2018 [01;34mmnt[0m
+drwxr-xr-x.  2 root    root       6 Apr 11  2018 [01;34mopt[0m
+drwxr-xr-x.  2 root    root       6 May 12  2018 [01;34mproc[0m
+dr-xr-x---.  3 root    root     171 Aug 15 07:57 [01;34mroot[0m
+drwxr-xr-x.  2 root    root       6 May 12  2018 [01;34mrun[0m
+lrwxrwxrwx.  1 root    root       8 Aug 15 08:01 [01;36msbin[0m -> [01;34musr/sbin[0m
+drwxr-xr-x.  2 root    root       6 Apr 11  2018 [01;34msrv[0m
+drwxr-xr-x.  2 root    root       6 May 12  2018 [01;34msys[0m
+drwxrwxrwt.  8 root    root    4096 Aug 15 08:01 [30;42mtmp[0m
+drwxr-xr-x. 13 root    root     155 May 12  2018 [01;34musr[0m
+drwxr-xr-x.  2 vagrant vagrant  173 Aug 12 13:53 [01;34mvagrant[0m
+drwxr-xr-x. 18 root    root     254 Aug 15 07:55 [01;34mvar[0m
+]0;root@lvm:~[root@lvm ~]# for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done
+]0;root@lvm:~[root@lvm ~]# chroot /mnt/
+]0;root@lvm:/[?1034h[root@lvm /]# grub2-mkconfig -o /boot/grub2/grub.cfg
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-3.10.0-862.2.3.el7.x86_64
+Found initrd image: /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img
+done
+]0;root@lvm:/[root@lvm /]# cd b[K/boot
+]0;root@lvm:/boot[root@lvm boot]# ll
+total 25980
+-rw-r--r--. 1 root root   147823 May  9  2018 config-3.10.0-862.2.3.el7.x86_64
+drwxr-xr-x. 3 root root       17 May 12  2018 [0m[01;34mefi[0m
+drwxr-xr-x. 2 root root       27 May 12  2018 [01;34mgrub[0m
+drwx------. 5 root root       97 Aug 15 08:02 [01;34mgrub2[0m
+-rw-------. 1 root root 16506787 May 12  2018 initramfs-3.10.0-862.2.3.el7.x86_64.img
+-rw-r--r--. 1 root root   304926 May  9  2018 [01;31msymvers-3.10.0-862.2.3.el7.x86_64.gz[0m
+-rw-------. 1 root root  3409102 May  9  2018 System.map-3.10.0-862.2.3.el7.x86_64
+-rwxr-xr-x. 1 root root  6225056 May  9  2018 [01;32mvmlinuz-3.10.0-862.2.3.el7.x86_64[0m
+]0;root@lvm:/boot[root@lvm boot]# dracut -v initramfs-3.10.0-862.2.3.el7.x86_64.img --force
+Executing: /sbin/dracut -v initramfs-3.10.0-862.2.3.el7.x86_64.img --force
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found!
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found!
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be found!
+dracut module 'dmsquash-live-ntfs' will not be installed, because command 'ntfs-3g' could not be found!
+dracut module 'multipath' will not be installed, because command 'multipath' could not be found!
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found!
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found!
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be found!
+dracut module 'dmsquash-live-ntfs' will not be installed, because command 'ntfs-3g' could not be found!
+dracut module 'multipath' will not be installed, because command 'multipath' could not be found!
+*** Including module: bash ***
+*** Including module: nss-softokn ***
+*** Including module: i18n ***
+*** Including module: drm ***
+*** Including module: plymouth ***
+*** Including module: dm ***
+Skipping udev rule: 64-device-mapper.rules
+Skipping udev rule: 60-persistent-storage-dm.rules
+Skipping udev rule: 55-dm.rules
+*** Including module: kernel-modules ***
+Omitting driver floppy
+*** Including module: lvm ***
+Skipping udev rule: 64-device-mapper.rules
+Skipping udev rule: 56-lvm.rules
+Skipping udev rule: 60-persistent-storage-lvm.rules
+*** Including module: qemu ***
+*** Including module: resume ***
+*** Including module: rootfs-block ***
+*** Including module: terminfo ***
+*** Including module: udev-rules ***
+Skipping udev rule: 40-redhat-cpu-hotplug.rules
+Skipping udev rule: 91-permissions.rules
+*** Including module: biosdevname ***
+*** Including module: systemd ***
+*** Including module: usrmount ***
+*** Including module: base ***
+*** Including module: fs-lib ***
+*** Including module: shutdown ***
+*** Including modules done ***
+*** Installing kernel module dependencies and firmware ***
+*** Installing kernel module dependencies and firmware done ***
+*** Resolving executable dependencies ***
+*** Resolving executable dependencies done***
+*** Hardlinking files ***
+*** Hardlinking files done ***
+*** Stripping files ***
+*** Stripping files done ***
+*** Generating early-microcode cpio image contents ***
+*** No early-microcode cpio image needed ***
+*** Store current command line parameters ***
+*** Creating image file ***
+*** Creating image file done ***
+*** Creating initramfs image file '/boot/initramfs-3.10.0-862.2.3.el7.x86_64.img' done ***
+]0;root@lvm:/boot[root@lvm boot]# cd /grub/gr[K[K[K[K[K[K[K[Kgrub/grub2
+bash: cd: grub/grub2: No such file or directory
+]0;root@lvm:/boot[root@lvm boot]# cd grub
+]0;root@lvm:/boot/grub[root@lvm grub]# ll
+total 4
+-rw-r--r--. 1 root root 1350 Nov 15  2011 [0m[01;31msplash.xpm.gz[0m
+]0;root@lvm:/boot/grub[root@lvm grub]# pwd
+/boot/grub
+]0;root@lvm:/boot/grub[root@lvm grub]# cd ..
+]0;root@lvm:/boot[root@lvm boot]# cd grub
+grub/  grub2/ 
+[root@lvm boot]# cd grub2
+]0;root@lvm:/boot/grub2[root@lvm grub2]# vi grub.cfg 
+[?1049h[?1h=[1;50r[?12;25h[?12l[?25h[27m[m[H[2J[?25l[50;1H"grub.cfg" 127L, 3650C[1;1H#
+# DO NOT EDIT THIS FILE
+#
+# It is automatically generated by grub2-mkconfig using templates
+# from /etc/grub.d and settings from /etc/default/grub
+#
+
+### BEGIN /etc/grub.d/00_header ###
+set pager=1
+
+if [ -s $prefix/grubenv ]; then
+  load_env
+fi
+if [ "${next_entry}" ] ; then
+   set default="${next_entry}"
+   set next_entry=
+   save_env next_entry
+   set boot_once=true
+else
+   set default="${saved_entry}"
+fi
+
+if [ x"${feature_menuentry_id}" = xy ]; then
+  menuentry_id_option="--id"
+else
+  menuentry_id_option=""
+fi
+
+export menuentry_id_option
+
+if [ "${prev_saved_entry}" ]; then
+  set saved_entry="${prev_saved_entry}"
+  save_env saved_entry
+  set prev_saved_entry=
+  save_env prev_saved_entry
+  set boot_once=true
+fi
+
+function savedefault {
+  if [ -z "${boot_once}" ]; then
+    saved_entry="${chosen}"
+    save_env saved_entry
+  fi
+}
+
+function load_video {
+  if [ x$feature_all_video_module = xy ]; then
+    insmod all_video
+  else[1;1H[?12l[?25h[?25l[27m[m[H[2J[1;5Hinsmod all_video
+  else
+    insmod efi_gop
+    insmod efi_uga
+    insmod ieee1275_fb
+    insmod vbe
+    insmod vga
+    insmod video_bochs
+    insmod video_cirrus
+  fi
+}
+
+terminal_output console
+if [ x$feature_timeout_style = xy ] ; then
+  set timeout_style=menu
+  set timeout=1
+# Fallback normal timeout code in case the timeout_style feature is
+# unavailable.
+else
+  set timeout=1
+fi
+### END /etc/grub.d/00_header ###
+
+### BEGIN /etc/grub.d/00_tuned ###
+set tuned_params=""
+set tuned_initrd=""
+### END /etc/grub.d/00_tuned ###
+
+### BEGIN /etc/grub.d/01_users ###
+if [ -f ${prefix}/user.cfg ]; then
+  source ${prefix}/user.cfg
+  if [ -n "${GRUB2_PASSWORD}" ]; then
+    set superusers="root"
+    export superusers
+    password_pbkdf2 root ${GRUB2_PASSWORD}
+  fi
+fi
+### END /etc/grub.d/01_users ###
+
+### BEGIN /etc/grub.d/10_linux ###
+menuentry 'CentOS Linux (3.10.0-862.2.3.el7.x86_64) 7 (Core)' --class centos --class gnu-linux --class gnu --class os --unrestricted $menuentry_id_option 'gnulii[42;1Hnux-3.10.0-862.2.3.el7.x86_64-advanced-d150195d-3a83-4f1c-845c-4e8537532417' {[43;9Hload_video[44;9Hset gfxpayload=keep[45;9Hinsmod gzio[46;9Hinsmod part_msdos[47;9Hinsmod xfs[48;9Hset root='hd0,msdos2'[49;9Hif [ x$feature_platform_search_hint = xy ]; then[1;5H[?12l[?25h[?25l[27m[m[H[2J[1;9Hset root='hd0,msdos2'[2;9Hif [ x$feature_platform_search_hint = xy ]; then[3;11Hsearch --no-floppy --fs-uuid --set=root --hint-bios=hd0,msdos2 --hint-efi=hd0,msdos2 --hint-baremetal=ahci0,msdos2  570897ca-e759-4c81-90cf-389da6eee44[4;1Hcc[5;9Helse[6;11Hsearch --no-floppy --fs-uuid --set=root 570897ca-e759-4c81-90cf-389da6eee4cc[7;9Hfi[8;9Hlinux16 /vmlinuz-3.10.0-862.2.3.el7.x86_64 root=/dev/mapper/vg1-lv1 ro no_timer_check console=tty0 console=ttyS0,115200n8 net.ifnames=0 biosdevname=0 ell[9;1Hevator=noop crashkernel=auto rd.lvm.lv=VolGroup00/LogVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet[10;9Hinitrd16 /initramfs-3.10.0-862.2.3.el7.x86_64.img
+}
+if [ "x$default" = 'CentOS Linux (3.10.0-862.2.3.el7.x86_64) 7 (Core)' ]; then default='Advanced options for CentOS Linux>CentOS Linux (3.10.0-862.2.3.el7.x86_66[13;1H4) 7 (Core)'; fi;
+### END /etc/grub.d/10_linux ###
+
+### BEGIN /etc/grub.d/20_linux_xen ###
+### END /etc/grub.d/20_linux_xen ###
+
+### BEGIN /etc/grub.d/20_ppc_terminfo ###
+### END /etc/grub.d/20_ppc_terminfo ###
+
+### BEGIN /etc/grub.d/30_os-prober ###
+### END /etc/grub.d/30_os-prober ###
+
+### BEGIN /etc/grub.d/40_custom ###
+# This file provides an easy way to add custom menu entries.  Simply type the
+# menu entries you want to add after this comment.  Be careful not to change
+# the 'exec tail' line above.
+### END /etc/grub.d/40_custom ###
+
+### BEGIN /etc/grub.d/41_custom ###
+if [ -f  ${config_directory}/custom.cfg ]; then
+  source ${config_directory}/custom.cfg
+elif [ -z "${config_directory}" -a -f  $prefix/custom.cfg ]; then
+  source $prefix/custom.cfg;
+fi
+### END /etc/grub.d/41_custom ###
+[1m[34m~                                                                                                                                                               [39;1H~                                                                                                                                                               [40;1H~                                                                                                                                                               [41;1H~                                                                                                                                                               [42;1H~                                                                                                                                                               [43;1H~                                                                                                                                                               [44;1H~                                                                                                                                                               [45;1H~                                                                                                                                                               [46;1H~                                                                                                                                                               [47;1H~                                                                                                                                                               [48;1H~                                                                                                                                                               [49;1H~                                                                                                                                                               [1;9H[?12l[?25h[2;9H[3;9H[5;9H[6;9H[7;9H[8;9H[10;9H[8;8H[m linux16 /vmlinuz-3.10.0-862.2.3.el7.x86_64 root=/dev/mapper/vg1-lv1 ro no_timer_check console=tty0 console=ttyS0,115200n8 net.ifnames=0 biosdevname=0 e
+evator=noop crashkernel=auto rd.lvm.lv=VolGroup00[?25l[50;1H[1m-- INSERT --[9;40H[?12l[?25h[?25l[molGroup00/LogVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;40H[?12l[?25h[?25llGroup00/LogVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;40H[?12l[?25h[?25lGroup00/LogVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;40H[?12l[?25h[?25lroup00/LogVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;40H[?12l[?25h[?25loup00/LogVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;40H[?12l[?25h[?25lup00/LogVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;40H[?12l[?25h[?25lp00/LogVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;40H[?12l[?25h[?25l00/LogVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;40H[?12l[?25h[?25l0/LogVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;40H[?12l[?25h[?25l/LogVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;40H[?12l[?25h[?25lv/LogVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet[9;41H[?12l[?25h[?25lg/LogVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet[9;42H[?12l[?25h[?25l1/LogVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet[9;43H[?12l[?25h/[?25logVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;44H[?12l[?25h[?25lgVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;44H[?12l[?25h[?25lVol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;44H[?12l[?25h[?25lol00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;44H[?12l[?25h[?25ll00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;44H[?12l[?25h[?25l00 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;44H[?12l[?25h[?25l0 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;44H[?12l[?25h[?25l rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet [9;44H[?12l[?25h[?25ll rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet[9;45H[?12l[?25h[?25lv rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet[9;46H[?12l[?25h[?25l1 rd.lvm.lv=VolGroup00/LogVol01 rhgb quiet[9;47H[?12l[?25h[50;1H[K[9;46H[?25l[?12l[?25h[?25l[50;1H:[?12l[?25hwq[?25l"grub.cfg" 127L, 3638C written
+[?1l>[?12l[?25h[?1049l]0;root@lvm:/boot/grub2[root@lvm grub2]# exit
+exit
+]0;root@lvm:~[root@lvm ~]# exit
+exit
+
+Script done on Thu 15 Aug 2019 08:09:55 AM UTC

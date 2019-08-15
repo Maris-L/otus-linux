@@ -1,0 +1,282 @@
+Script started on Thu 15 Aug 2019 08:12:23 AM UTC
+]0;root@lvm:~[?1034h[root@lvm ~]# lsblk
+NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda                       8:0    0   40G  0 disk 
+├─sda1                    8:1    0    1M  0 part 
+├─sda2                    8:2    0    1G  0 part /boot
+└─sda3                    8:3    0   39G  0 part 
+  ├─VolGroup00-LogVol01 253:1    0  1.5G  0 lvm  [SWAP]
+  └─VolGroup00-LogVol00 253:2    0 37.5G  0 lvm  
+sdb                       8:16   0   10G  0 disk 
+└─vg1-lv1               253:0    0   10G  0 lvm  /
+sdc                       8:32   0    2G  0 disk 
+sdd                       8:48   0    1G  0 disk 
+sde                       8:64   0    1G  0 disk 
+]0;root@lvm:~[root@lvm ~]# lsblk -fi
+NAME                    FSTYPE      LABEL UUID                                   MOUNTPOINT
+sda                                                                              
+|-sda1                                                                           
+|-sda2                  xfs               570897ca-e759-4c81-90cf-389da6eee4cc   /boot
+`-sda3                  LVM2_member       vrrtbx-g480-HcJI-5wLn-4aOf-Olld-rC03AY 
+  |-VolGroup00-LogVol01 swap              c39c5bed-f37c-4263-bee8-aeb6a6659d7b   [SWAP]
+  `-VolGroup00-LogVol00 xfs               b60e9498-0baa-4d9f-90aa-069048217fee   
+sdb                     LVM2_member       cVWNJr-wmiD-LQU6-7NzR-jwka-VAR3-fWxpuT 
+`-vg1-lv1               xfs               d150195d-3a83-4f1c-845c-4e8537532417   /
+sdc                                                                              
+sdd                                                                              
+sde                                                                              
+]0;root@lvm:~[root@lvm ~]# lvremove /dev/VolGroup00/LogVol00
+Do you really want to remove active logical volume VolGroup00/LogVol00? [y/n]: y
+  Logical volume "LogVol00" successfully removed
+]0;root@lvm:~[root@lvm ~]# lvcreate /dev/VolGroup00/LogVol00 -L 8G /dev/VolGroup00
+  Volume group name expected (no slash)
+  Run `lvcreate --help' for more information.
+]0;root@lvm:~[root@lvm ~]# lvcreate -n VolGroup00/LogVol00 -L 8G /dev/VolGroup00
+WARNING: xfs signature detected on /dev/VolGroup00/LogVol00 at offset 0. Wipe it? [y/n]: y
+  Wiping xfs signature on /dev/VolGroup00/LogVol00.
+  Logical volume "LogVol00" created.
+]0;root@lvm:~[root@lvm ~]# mkfs.xfs /dev/VolGroup00/LogVol00
+meta-data=/dev/VolGroup00/LogVol00 isize=512    agcount=4, agsize=524288 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0, sparse=0
+data     =                       bsize=4096   blocks=2097152, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+]0;root@lvm:~[root@lvm ~]# mount /dev/VolGroup00/LogVol00 /mnt
+]0;root@lvm:~[root@lvm ~]# xfsdump -J - /dev/vg1/lv1 | xfsrestore -j J - /mnt
+xfsrestore: ERROR: no source file(s) specified
+xfsrestore: usage: xfsrestore [ -a <alt. workspace dir> ... ]
+                              [ -b <blocksize> ]
+                              [ -c <media change alert program>  ]
+                              [ -e (don't overwrite existing files) ]
+                              [ -f <source> ... ]
+                              [ -h (help) ]
+                              [ -i (interactive) ]
+                              [ -m (force usage of minimal rmt) ]
+                              [ -n <file> (restore only if newer than) ]
+                              [ -o (restore owner/group even if not root) ]
+                              [ -p <seconds between progress reports> ]
+                              [ -q <use QIC tape settings> ]
+                              [ -r (cumulative restore) ]
+                              [ -s <subtree> ... ]
+                              [ -t (contents only) ]
+                              [ -v <verbosity {silent, verbose, trace}> ]
+                              [ -w (use small tree window) ]
+                              [ -A (don't restore extended file attributes) ]
+                              [ -B (restore root dir owner/permissions) ]
+                              [ -D (restore DMAPI event settings) ]
+                              [ -E (don't overwrite if changed) ]
+                              [ -F (don't prompt) ]
+                              [ -I (display dump inventory) ]
+                              [ -J (inhibit inventory update) ]
+                              [ -K (force use of format 2 generation numbers) ]
+                              [ -L <session label> ]
+                              [ -O <options file> ]
+                              [ -Q (force interrupted session completion) ]
+                              [ -R (resume) ]
+                              [ -S <session id> ]
+                              [ -T (don't timeout dialogs) ]
+                              [ -X <excluded subtree> ... ]
+                              [ -Y <I/O buffer ring length> ]
+                              [ - (stdin) ]
+                              [ <destination> ]
+xfsrestore: Restore Status: ERROR
+xfsdump: using file dump (drive_simple) strategy
+xfsdump: version 3.1.7 (dump format 3.0)
+xfsdump: level 0 dump of lvm:/
+xfsdump: dump date: Thu Aug 15 08:16:23 2019
+xfsdump: session id: 0f058ba8-b77d-4f2c-8433-3e92289a9b87
+xfsdump: session label: ""
+xfsdump: ino map phase 1: constructing initial dump list
+xfsdump: ino map phase 2: skipping (no pruning necessary)
+xfsdump: ino map phase 3: skipping (only one dump stream)
+xfsdump: ino map construction complete
+xfsdump: estimated dump size: 764676096 bytes
+xfsdump: creating dump session media file 0 (media 0, file 0)
+xfsdump: dumping ino map
+xfsdump: dumping directories
+xfsdump: WARNING: write to stdio failed: 32 (Broken pipe)
+xfsdump: ending media file
+xfsdump: media file size 0 bytes
+xfsdump: dump size (non-dir files) : 0 bytes
+xfsdump: NOTE: dump interrupted: 1 seconds elapsed
+xfsdump: Dump Status: INTERRUPT
+]0;root@lvm:~[root@lvm ~]# xfsdump -J - /dev/vg1/lv1 | xfsrestore -J - /mnt
+xfsrestore: using file dump (drive_simple) strategy
+xfsrestore: version 3.1.7 (dump format 3.0)
+xfsdump: using file dump (drive_simple) strategy
+xfsdump: version 3.1.7 (dump format 3.0)
+xfsdump: level 0 dump of lvm:/
+xfsdump: dump date: Thu Aug 15 08:17:41 2019
+xfsdump: session id: 7dee906a-d979-4d8e-81bc-032af947b7ac
+xfsdump: session label: ""
+xfsrestore: searching media for dump
+xfsdump: ino map phase 1: constructing initial dump list
+xfsdump: ino map phase 2: skipping (no pruning necessary)
+xfsdump: ino map phase 3: skipping (only one dump stream)
+xfsdump: ino map construction complete
+xfsdump: estimated dump size: 764168192 bytes
+xfsdump: creating dump session media file 0 (media 0, file 0)
+xfsdump: dumping ino map
+xfsdump: dumping directories
+xfsrestore: examining media file 0
+xfsrestore: dump description: 
+xfsrestore: hostname: lvm
+xfsrestore: mount point: /
+xfsrestore: volume: /dev/mapper/vg1-lv1
+xfsrestore: session time: Thu Aug 15 08:17:41 2019
+xfsrestore: level: 0
+xfsrestore: session label: ""
+xfsrestore: media label: ""
+xfsrestore: file system id: d150195d-3a83-4f1c-845c-4e8537532417
+xfsrestore: session id: 7dee906a-d979-4d8e-81bc-032af947b7ac
+xfsrestore: media id: d20dfcf9-8fbc-4f53-b3d8-5651cc1eda87
+xfsrestore: searching media for directory dump
+xfsrestore: reading directories
+xfsdump: dumping non-directory files
+xfsrestore: 2702 directories and 23655 entries processed
+xfsrestore: directory post-processing
+xfsrestore: restoring non-directory files
+xfsdump: ending media file
+xfsdump: media file size 741141016 bytes
+xfsdump: dump size (non-dir files) : 727952032 bytes
+xfsdump: dump complete: 27 seconds elapsed
+xfsdump: Dump Status: SUCCESS
+xfsrestore: restore complete: 27 seconds elapsed
+xfsrestore: Restore Status: SUCCESS
+]0;root@lvm:~[root@lvm ~]# for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done
+]0;root@lvm:~[root@lvm ~]# chroot /mnt/
+]0;root@lvm:/[?1034h[root@lvm /]# grub2-mkconfig -o /boot/grub2/grub.cfg
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-3.10.0-862.2.3.el7.x86_64
+Found initrd image: /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img
+done
+]0;root@lvm:/[root@lvm /]# lvs
+  LV       VG         Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  LogVol00 VolGroup00 -wi-ao----   8.00g                                                    
+  LogVol01 VolGroup00 -wi-ao----   1.50g                                                    
+  lv1      vg1        -wi-ao---- <10.00g                                                    
+]0;root@lvm:/[root@lvm /]# pvs
+  PV         VG         Fmt  Attr PSize   PFree  
+  /dev/sda3  VolGroup00 lvm2 a--  <38.97g <29.47g
+  /dev/sdb   vg1        lvm2 a--  <10.00g      0 
+]0;root@lvm:/[root@lvm /]# lsblk
+NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda                       8:0    0   40G  0 disk 
+├─sda1                    8:1    0    1M  0 part 
+├─sda2                    8:2    0    1G  0 part /boot
+└─sda3                    8:3    0   39G  0 part 
+  ├─VolGroup00-LogVol01 253:1    0  1.5G  0 lvm  [SWAP]
+  └─VolGroup00-LogVol00 253:2    0    8G  0 lvm  /
+sdb                       8:16   0   10G  0 disk 
+└─vg1-lv1               253:0    0   10G  0 lvm  
+sdc                       8:32   0    2G  0 disk 
+sdd                       8:48   0    1G  0 disk 
+sde                       8:64   0    1G  0 disk 
+]0;root@lvm:/[root@lvm /]# pvcreate /dev/sdc /dev/sdd
+  Physical volume "/dev/sdc" successfully created.
+  Physical volume "/dev/sdd" successfully created.
+]0;root@lvm:/[root@lvm /]# vgcreate vg_var /dev/sdc /dev/sdd
+  Volume group "vg_var" successfully created
+]0;root@lvm:/[root@lvm /]# lvcreate -L 1G -m1 -n lv_var vg_var
+  Insufficient suitable allocatable extents for logical volume lv_var: 4 more required
+]0;root@lvm:/[root@lvm /]# lvcreate -L 1G -m1 -n lv_var vg_var[1P[1P[1@9[1@5[1@0[1@M
+  Rounding up size to full physical extent 952.00 MiB
+  Logical volume "lv_var" created.
+]0;root@lvm:/[root@lvm /]# mkfs.ext4 /dev/vg_var/lv_var
+mke2fs 1.42.9 (28-Dec-2013)
+Filesystem label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+Stride=0 blocks, Stripe width=0 blocks
+60928 inodes, 243712 blocks
+12185 blocks (5.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=249561088
+8 block groups
+32768 blocks per group, 32768 fragments per group
+7616 inodes per group
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376
+
+Allocating group tables: 0/8   done                            
+Writing inode tables: 0/8   done                            
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: 0/8   done
+
+]0;root@lvm:/[root@lvm /]# mount /dev/vg_var/lv_var /mnt
+]0;root@lvm:/[root@lvm /]# cp -aR /var/* /mnt/
+]0;root@lvm:/[root@lvm /]# mkdir /tmp/oldvar
+]0;root@lvm:/[root@lvm /]# mv /var/* /tmp/oldvar
+]0;root@lvm:/[root@lvm /]# ll /var
+total 0
+]0;root@lvm:/[root@lvm /]# umount /mnt
+]0;root@lvm:/[root@lvm /]# mount /dev/vg_var/lv_var /var
+]0;root@lvm:/[root@lvm /]# mount
+/dev/mapper/VolGroup00-LogVol00 on / type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
+sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime,seclabel)
+devtmpfs on /dev type devtmpfs (rw,nosuid,seclabel,size=111876k,nr_inodes=27969,mode=755)
+tmpfs on /run type tmpfs (rw,nosuid,nodev,seclabel,mode=755)
+/dev/sda2 on /boot type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+/dev/mapper/vg_var-lv_var on /var type ext4 (rw,relatime,seclabel,data=ordered)
+]0;root@lvm:/[root@lvm /]# cat /etc/fstab
+
+#
+# /etc/fstab
+# Created by anaconda on Sat May 12 18:50:26 2018
+#
+# Accessible filesystems, by reference, are maintained under '/dev/disk'
+# See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+#
+/dev/mapper/VolGroup00-LogVol00 /                       xfs     defaults        0 0
+UUID=570897ca-e759-4c81-90cf-389da6eee4cc /boot                   xfs     defaults        0 0
+/dev/mapper/VolGroup00-LogVol01 swap                    swap    defaults        0 0
+]0;root@lvm:/[root@lvm /]# echo "`blkid | grep var: | awk '{print $2}'` /var ext4 defaults 0 0" >> /etc/fstab
+]0;root@lvm:/[root@lvm /]# echo "`blkid | grep var: | awk '{print $2}'` /var ext4 defaults 0 0" >> /etc/fstab[C[C[C[C[C[C[C[C[C[C[C[C[C[Ccat /etc/fstab[K
+
+#
+# /etc/fstab
+# Created by anaconda on Sat May 12 18:50:26 2018
+#
+# Accessible filesystems, by reference, are maintained under '/dev/disk'
+# See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+#
+/dev/mapper/VolGroup00-LogVol00 /                       xfs     defaults        0 0
+UUID=570897ca-e759-4c81-90cf-389da6eee4cc /boot                   xfs     defaults        0 0
+/dev/mapper/VolGroup00-LogVol01 swap                    swap    defaults        0 0
+UUID="1805f3a4-561a-42f1-9dde-ddb7498373a2" /var ext4 defaults 0 0
+]0;root@lvm:/[root@lvm /]# vi /etc/fstab 
+[?1049h[?1h=[1;50r[?12;25h[?12l[?25h[27m[m[H[2J[?25l[50;1H"/etc/fstab" 12L, 548C[2;1H#
+# /etc/fstab
+# Created by anaconda on Sat May 12 18:50:26 2018
+#
+# Accessible filesystems, by reference, are maintained under '/dev/disk'
+# See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+#
+/dev/mapper/VolGroup00-LogVol00 /[23Cxfs     defaults[8C0 0
+UUID=570897ca-e759-4c81-90cf-389da6eee4cc /boot[19Cxfs     defaults[8C0 0
+/dev/mapper/VolGroup00-LogVol01 swap[20Cswap    defaults[8C0 0
+UUID="1805f3a4-561a-42f1-9dde-ddb7498373a2" /var ext4 defaults 0 0
+[1m[34m~                                                                                                                                                               [14;1H~                                                                                                                                                               [15;1H~                                                                                                                                                               [16;1H~                                                                                                                                                               [17;1H~                                                                                                                                                               [18;1H~                                                                                                                                                               [19;1H~                                                                                                                                                               [20;1H~                                                                                                                                                               [21;1H~                                                                                                                                                               [22;1H~                                                                                                                                                               [23;1H~                                                                                                                                                               [24;1H~                                                                                                                                                               [25;1H~                                                                                                                                                               [26;1H~                                                                                                                                                               [27;1H~                                                                                                                                                               [28;1H~                                                                                                                                                               [29;1H~                                                                                                                                                               [30;1H~                                                                                                                                                               [31;1H~                                                                                                                                                               [32;1H~                                                                                                                                                               [33;1H~                                                                                                                                                               [34;1H~                                                                                                                                                               [35;1H~                                                                                                                                                               [36;1H~                                                                                                                                                               [37;1H~                                                                                                                                                               [38;1H~                                                                                                                                                               [39;1H~                                                                                                                                                               [40;1H~                                                                                                                                                               [41;1H~                                                                                                                                                               [42;1H~                                                                                                                                                               [43;1H~                                                                                                                                                               [44;1H~                                                                                                                                                               [45;1H~                                                                                                                                                               [46;1H~                                                                                                                                                               [47;1H~                                                                                                                                                               [48;1H~                                                                                                                                                               [49;1H~                                                                                                                                                               [1;1H[?12l[?25h
+
+
+
+
+
+
+
+
+
+
+[mUUID=[?25l[50;1H[1m-- INSERT --[m[50;14H[K[12;6H[?12l[?25h[?25l1805f3a4-561a-42f1-9dde-ddb7498373a2" /var ext4 defaults 0 0[12;66H[K[12;6H[?12l[?25h1805f3a4-561a-42f1-9dde-ddb7498373a2[?25l /var ext4 defaults 0 0[12;65H[K[12;42H[?12l[?25h[50;1H[K[12;41H[?25l[?12l[?25h[?25l[50;1H:[?12l[?25hwq[?25l"/etc/fstab" 12L, 546C written
+[?1l>[?12l[?25h[?1049l]0;root@lvm:/[root@lvm /]# exit
+exit
+]0;root@lvm:~[root@lvm ~]# exit
+exit
+
+Script done on Thu 15 Aug 2019 08:23:49 AM UTC

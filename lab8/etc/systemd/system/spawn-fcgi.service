@@ -1,0 +1,14 @@
+[Unit]
+Description=FastCGI service by Otus
+After=network.target httpd.service
+Requires=httpd.service
+
+[Service]
+Type=simple
+PIDFile=/var/tmp/spawn-fcgi.pid
+EnvironmentFile=/etc/sysconfig/spawn-fcgi
+ExecStart=/bin/spawn-fcgi -n $OPTIONS
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target

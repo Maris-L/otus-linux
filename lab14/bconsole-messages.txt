@@ -1,0 +1,143 @@
+*
+*
+*list jobs
++-------+---------------+---------------------+------+-------+----------+------------+-----------+
+| jobid | name          | starttime           | type | level | jobfiles | jobbytes   | jobstatus |
++-------+---------------+---------------------+------+-------+----------+------------+-----------+
+|     1 | BackupClient1 | 2020-01-09 13:10:48 | B    | F     |    2,412 | 31,441,385 | T         |
+|     2 | BackupClient2 | 2020-01-09 13:11:26 | B    | F     |    2,412 | 31,441,381 | T         |
+|     3 | BackupClient1 | 2020-01-09 13:20:00 | B    | I     |        0 |          0 | T         |
+|     4 | BackupClient2 | 2020-01-09 13:20:02 | B    | I     |        0 |          0 | T         |
+|     5 | BackupClient1 | 2020-01-09 13:30:00 | B    | I     |        0 |          0 | T         |
+|     6 | BackupClient2 | 2020-01-09 13:30:02 | B    | I     |        0 |          0 | T         |
+|     7 | BackupClient1 | 2020-01-09 13:40:00 | B    | I     |        0 |          0 | T         |
+|     8 | BackupClient2 | 2020-01-09 13:40:02 | B    | I     |        0 |          0 | T         |
+|     9 | BackupClient1 | 2020-01-09 13:45:00 | B    | D     |        0 |          0 | T         |
+|    10 | BackupClient2 | 2020-01-09 13:45:02 | B    | D     |        0 |          0 | T         |
+|    11 | BackupClient1 | 2020-01-09 13:50:00 | B    | I     |        0 |          0 | T         |
+|    12 | BackupClient2 | 2020-01-09 13:50:02 | B    | I     |        0 |          0 | T         |
+|    13 | BackupClient1 | 2020-01-09 14:00:00 | B    | I     |        0 |          0 | T         |
+|    14 | BackupClient2 | 2020-01-09 14:00:02 | B    | I     |        0 |          0 | T         |
+|    15 | BackupClient1 | 2020-01-09 14:10:00 | B    | I     |        0 |          0 | T         |
+|    16 | BackupClient2 | 2020-01-09 14:10:02 | B    | I     |        0 |          0 | T         |
+|    17 | BackupClient1 | 2020-01-09 14:15:00 | B    | D     |        0 |          0 | T         |
+|    18 | BackupClient2 | 2020-01-09 14:15:02 | B    | D     |        0 |          0 | T         |
+|    19 | BackupClient1 | 2020-01-09 14:20:00 | B    | I     |        0 |          0 | T         |
+|    20 | BackupClient2 | 2020-01-09 14:20:02 | B    | I     |        0 |          0 | T         |
+|    21 | BackupClient1 | 2020-01-09 14:30:00 | B    | I     |        0 |          0 | T         |
+|    22 | BackupClient2 | 2020-01-09 14:30:02 | B    | I     |        0 |          0 | T         |
+|    23 | BackupClient1 | 2020-01-09 14:40:00 | B    | I     |        0 |          0 | T         |
+|    24 | BackupClient2 | 2020-01-09 14:40:02 | B    | I     |        0 |          0 | T         |
+|    25 | BackupClient1 | 2020-01-09 14:45:01 | B    | D     |        0 |          0 | T         |
+|    26 | BackupClient2 | 2020-01-09 14:45:03 | B    | D     |        0 |          0 | T         |
+|    27 | BackupClient1 | 2020-01-09 14:50:01 | B    | I     |        0 |          0 | T         |
+|    28 | BackupClient2 | 2020-01-09 14:50:03 | B    | I     |        0 |          0 | T         |
+|    29 | BackupClient1 | 2020-01-09 15:00:01 | B    | I     |        0 |          0 | T         |
+|    30 | BackupClient2 | 2020-01-09 15:00:03 | B    | I     |        0 |          0 | T         |
+|    31 | BackupClient1 | 2020-01-09 15:10:01 | B    | I     |        0 |          0 | T         |
+|    32 | BackupClient2 | 2020-01-09 15:10:03 | B    | I     |        0 |          0 | T         |
+|    33 | BackupClient1 | 2020-01-09 15:15:00 | B    | D     |        0 |          0 | T         |
+|    34 | BackupClient2 | 2020-01-09 15:15:02 | B    | D     |        0 |          0 | T         |
+|    35 | BackupClient1 | 2020-01-09 15:20:00 | B    | I     |        0 |          0 | T         |
+|    36 | BackupClient2 | 2020-01-09 15:20:02 | B    | I     |        0 |          0 | T         |
+|    37 | BackupClient1 | 2020-01-09 15:30:00 | B    | I     |        0 |          0 | T         |
+|    38 | BackupClient2 | 2020-01-09 15:30:02 | B    | I     |        0 |          0 | T         |
+|    39 | BackupClient1 | 2020-01-09 15:40:00 | B    | I     |        6 |      1,662 | T         |
+|    40 | BackupClient2 | 2020-01-09 15:40:02 | B    | I     |        6 |      1,662 | T         |
++-------+---------------+---------------------+------+-------+----------+------------+-----------+
+You have messages.
+*
+*
+*
+*m
+09-Jan 15:40 bacula-dir JobId 39: Start Backup JobId 39, Job=BackupClient1.2020-01-09_15.40.00_39
+09-Jan 15:40 bacula-dir JobId 39: Using Device "FileStorage" to write.
+09-Jan 15:40 bacula-sd JobId 39: Volume "MyVolume" previously written, moving to end of data.
+09-Jan 15:40 bacula-sd JobId 39: Ready to append to end of Volume "MyVolume" size=63683978
+09-Jan 15:40 bacula-sd JobId 39: Elapsed time=00:00:01, Transfer rate=2.222 K Bytes/second
+09-Jan 15:40 bacula-dir JobId 39: Bacula bacula-dir 5.2.13 (19Jan13):
+  Build OS:               x86_64-redhat-linux-gnu redhat (Core)
+  JobId:                  39
+  Job:                    BackupClient1.2020-01-09_15.40.00_39
+  Backup Level:           Incremental, since=2020-01-09 15:30:00
+  Client:                 "client1-fd" 5.2.13 (19Jan13) x86_64-redhat-linux-gnu,redhat,(Core)
+  FileSet:                "CentOS Configs" 2020-01-09 13:10:46
+  Pool:                   "File" (From Job resource)
+  Catalog:                "MyCatalog" (From Client resource)
+  Storage:                "File" (From Job resource)
+  Scheduled time:         09-Jan-2020 15:40:00
+  Start time:             09-Jan-2020 15:40:00
+  End time:               09-Jan-2020 15:40:00
+  Elapsed time:           0 secs
+  Priority:               10
+  FD Files Written:       6
+  SD Files Written:       6
+  FD Bytes Written:       1,662 (1.662 KB)
+  SD Bytes Written:       2,222 (2.222 KB)
+  Rate:                   0.0 KB/s
+  Software Compression:   None
+  VSS:                    no
+  Encryption:             no
+  Accurate:               no
+  Volume name(s):         MyVolume
+  Volume Session Id:      39
+  Volume Session Time:    1578574526
+  Last Volume Bytes:      63,686,758 (63.68 MB)
+  Non-fatal FD errors:    0
+  SD Errors:              0
+  FD termination status:  OK
+  SD termination status:  OK
+  Termination:            Backup OK
+
+09-Jan 15:40 bacula-dir JobId 39: Begin pruning Jobs older than 6 months .
+09-Jan 15:40 bacula-dir JobId 39: No Jobs found to prune.
+09-Jan 15:40 bacula-dir JobId 39: Begin pruning Files.
+09-Jan 15:40 bacula-dir JobId 39: No Files found to prune.
+09-Jan 15:40 bacula-dir JobId 39: End auto prune.
+
+09-Jan 15:40 bacula-dir JobId 40: Start Backup JobId 40, Job=BackupClient2.2020-01-09_15.40.00_40
+09-Jan 15:40 bacula-dir JobId 40: Using Device "FileStorage" to write.
+09-Jan 15:40 bacula-sd JobId 40: Volume "MyVolume" previously written, moving to end of data.
+09-Jan 15:40 bacula-sd JobId 40: Ready to append to end of Volume "MyVolume" size=63686758
+09-Jan 15:40 bacula-sd JobId 40: Elapsed time=00:00:01, Transfer rate=2.222 K Bytes/second
+09-Jan 15:40 bacula-dir JobId 40: Bacula bacula-dir 5.2.13 (19Jan13):
+  Build OS:               x86_64-redhat-linux-gnu redhat (Core)
+  JobId:                  40
+  Job:                    BackupClient2.2020-01-09_15.40.00_40
+  Backup Level:           Incremental, since=2020-01-09 15:30:02
+  Client:                 "client2-fd" 5.2.13 (19Jan13) x86_64-redhat-linux-gnu,redhat,(Core)
+  FileSet:                "CentOS Configs" 2020-01-09 13:10:46
+  Pool:                   "File" (From Job resource)
+  Catalog:                "MyCatalog" (From Client resource)
+  Storage:                "File" (From Job resource)
+  Scheduled time:         09-Jan-2020 15:40:00
+  Start time:             09-Jan-2020 15:40:02
+  End time:               09-Jan-2020 15:40:02
+  Elapsed time:           0 secs
+  Priority:               10
+  FD Files Written:       6
+  SD Files Written:       6
+  FD Bytes Written:       1,662 (1.662 KB)
+  SD Bytes Written:       2,222 (2.222 KB)
+  Rate:                   0.0 KB/s
+  Software Compression:   None
+  VSS:                    no
+  Encryption:             no
+  Accurate:               no
+  Volume name(s):         MyVolume
+  Volume Session Id:      40
+  Volume Session Time:    1578574526
+  Last Volume Bytes:      63,689,538 (63.68 MB)
+  Non-fatal FD errors:    0
+  SD Errors:              0
+  FD termination status:  OK
+  SD termination status:  OK
+  Termination:            Backup OK
+
+09-Jan 15:40 bacula-dir JobId 40: Begin pruning Jobs older than 6 months .
+09-Jan 15:40 bacula-dir JobId 40: No Jobs found to prune.
+09-Jan 15:40 bacula-dir JobId 40: Begin pruning Files.
+09-Jan 15:40 bacula-dir JobId 40: No Files found to prune.
+09-Jan 15:40 bacula-dir JobId 40: End auto prune.
+
+*

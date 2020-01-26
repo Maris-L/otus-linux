@@ -14,7 +14,7 @@
 
 [list jobs](list-jobs.txt)  
 list files [jobid=1](jobid1.txt) и [jobid=2](jobid2.txt)  
-правим пару файлов и смотрим инкрементальную копию[list files](list-files-jobid.txt)  
+правим пару файлов и смотрим инкрементальную копию [list files](list-files-jobid.txt)  
 
 Компрессия файлов (см. соотв. раздел в [Bacula Director](bacula-dir.conf)):
 ```

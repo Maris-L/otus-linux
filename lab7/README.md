@@ -1,18 +1,21 @@
 # Домашнее задание №7
 
-1. Попасть в систему без пароля несколькими способами (в virtualbox вагрант centos/7 образе не удалось запустить, запускал с vagrant образа rhel7 (смотреть Vagrantfile):  
+1. Попасть в систему без пароля несколькими способами (в virtualbox6.0/Win10/Vagrant2.2.6 centos/7 образ не удалось запустить (см. [CentOS](virtualbox-centos7.PNG), запускал с vagrant образа rhel7 (смотреть [Vagrantfile](Vagrantfile))):  
     * Метод 1:  
 	изменить в запуске `ro` на `rw init=/sysroot/bin/sh`  
-	смотреть [здесь](boot1.png)  
-	запуск и смена пароля [здесь](boot2.png)  
+	![method1](boot1.png)  
+	запуск и смена пароля 
+    ![method1_2](boot2.png)  
 * Метод 2:  
 	дополнить в запуске `rd.break`  
-	смотреть [здесь](boot3.png)  
-	запуск и смена пароля [здесь](boot4.png)  
+	![method2](boot3.png)  
+	запуск и смена пароля  
+    ![method2_2](boot4.png)  
 * Метод 3:  
 	дополнить в запуске `init=/bin/sh`  
-	смотреть [здесь](boot5.png)  
-	запуск и смена пароля [здесь](boot6.png)  
+	![method3](boot5.png)  
+	запуск и смена пароля  
+    ![method3_2](boot6.png)  
 P.S. На RHEL7 надо исправить в `/etc/ssh/sshd_config` `#PermitRootLogin yes` на `PermitRootLogin no`
 2. Установить систему с LVM, после чего переименовать VG:
     * Смотрим vgs, делаем vgrename:  
@@ -30,7 +33,8 @@ P.S. На RHEL7 надо исправить в `/etc/ssh/sshd_config` `#PermitRo
     `dracut -f -v`
 * Проверяем модуль test:
 `lsinitrd -m /boot/initramfs-$(uname -r).img | grep test`
-* Перегружаемся и смотрим [результат](test-module.png)
+* Перегружаемся и смотрим  
+![результат](test-module.png)
 ---
 Загрузка [CentOS](virtualbox-centos7.PNG), Vagrantfile [здесь](Vagrantfile)  
 Boot screen-ы [Метод 1](boot1.png) [Метод 1](boot2.png) [Метод 2](boot3.png) [Метод 2](boot4.png) [Метод 3](boot5.png) [Метод 3](boot6.png)  

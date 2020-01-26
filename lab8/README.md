@@ -58,22 +58,6 @@ Web site 2
 4766
 [root@otuslinux run]# more /var/run/httpd_instance2.pid
 4779
-[root@otuslinux conf]# ps -aux |grep httpd
-root      5412  0.0  1.3 313808 13240 ?        Ss   11:22   0:00 /usr/sbin/httpd -f /etc/httpd/conf/httpd-instance1.conf -DFOREGROUND
-apache    5413  0.0  0.3 265156  3804 ?        S    11:22   0:00 /usr/sbin/httpd -f /etc/httpd/conf/httpd-instance1.conf -DFOREGROUND
-apache    5414  0.0  0.6 313944  6164 ?        S    11:22   0:00 /usr/sbin/httpd -f /etc/httpd/conf/httpd-instance1.conf -DFOREGROUND
-apache    5415  0.0  0.6 313944  6164 ?        S    11:22   0:00 /usr/sbin/httpd -f /etc/httpd/conf/httpd-instance1.conf -DFOREGROUND
-apache    5416  0.0  0.6 313944  6164 ?        S    11:22   0:00 /usr/sbin/httpd -f /etc/httpd/conf/httpd-instance1.conf -DFOREGROUND
-apache    5417  0.0  0.6 313944  6164 ?        S    11:22   0:00 /usr/sbin/httpd -f /etc/httpd/conf/httpd-instance1.conf -DFOREGROUND
-apache    5418  0.0  0.6 313944  6164 ?        S    11:22   0:00 /usr/sbin/httpd -f /etc/httpd/conf/httpd-instance1.conf -DFOREGROUND
-root      5425  0.0  1.3 313808 13236 ?        Ss   11:22   0:00 /usr/sbin/httpd -f /etc/httpd/conf/httpd-instance2.conf -DFOREGROUND
-apache    5426  0.0  0.3 265156  3804 ?        S    11:22   0:00 /usr/sbin/httpd -f /etc/httpd/conf/httpd-instance2.conf -DFOREGROUND
-apache    5427  0.0  0.6 313944  6160 ?        S    11:22   0:00 /usr/sbin/httpd -f /etc/httpd/conf/httpd-instance2.conf -DFOREGROUND
-apache    5428  0.0  0.6 313944  6160 ?        S    11:22   0:00 /usr/sbin/httpd -f /etc/httpd/conf/httpd-instance2.conf -DFOREGROUND
-apache    5429  0.0  0.6 313944  6160 ?        S    11:22   0:00 /usr/sbin/httpd -f /etc/httpd/conf/httpd-instance2.conf -DFOREGROUND
-apache    5430  0.0  0.6 313944  6160 ?        S    11:22   0:00 /usr/sbin/httpd -f /etc/httpd/conf/httpd-instance2.conf -DFOREGROUND
-apache    5431  0.0  0.6 313944  6160 ?        S    11:22   0:00 /usr/sbin/httpd -f /etc/httpd/conf/httpd-instance2.conf -DFOREGROUND
-root      5476  0.0  0.0  12520   984 pts/0    R+   11:31   0:00 grep --color=auto httpd
 [root@otuslinux ~]# ss -tulnp |grep httpd
 tcp    LISTEN     0      128      :::8080                 :::*                   users:(("httpd",pid=4785,fd=4),("httpd",pid=4784,fd=4),("httpd",pid=4783,fd=4),("httpd",pid=4782,fd=4),("httpd",pid=4781,fd=4),("httpd",pid=4780,fd=4),("httpd",pid=4779,fd=4))
 tcp    LISTEN     0      128      :::80                   :::*                   users:(("httpd",pid=4772,fd=4),("httpd",pid=4771,fd=4),("httpd",pid=4770,fd=4),("httpd",pid=4769,fd=4),("httpd",pid=4768,fd=4),("httpd",pid=4767,fd=4),("httpd",pid=4766,fd=4))
